@@ -274,25 +274,81 @@ trait Summary{
 
 // a single struct can implement multiple traits  <T: Summary + Display> only those struct that implement both Summary and Display can be passed here
 
- let vj;
- vj=44;
- println!("{vj}");
+use std::thread;    
 
 
-fn longest<'a,'b>(a:&'a str, b: &'b str)-> &'a str  // rust compiler will say what if the b it will point to and its scope ends cause it is being borrowed so the ownership is still with them 
-{
-    if a.len()>b.len(){
-        a
-    }
-    else {
-        b
-    }
+// let _handle= thread::spawn(||{
+//     for i in 0..5{
+//         println!("hi from spawned thread {}",i);
+//     }
+// });
+//  // wait for the spawned thread to finish
+// for i in 0..5 {
+//     println!("hi from main thread {}", i);
+// }
+
+struct Nm{
+    name: String,
+    age: u8,
 }
-let result;
-let str1=String::from("vinay");
-{let str2=String::from("joshidd");
-  result = longest(&str1, &str2);}  // here scope changes what if result points to the str2 but its scop ends so it will be a dangling pointer even if it is small compiler gives u the error
-println!("Longest string is: {}", result);
+let vjj= Nm{
+    name: String::from("Vinay Joshi"),
+    age: 21,
  
+};
+ let formatted=format!("name is {} , age is {}", vjj.name, vjj.age) ; // This will format the string with the values of `name` and `age` from the `vjj` instance
+println!("{}", formatted);
+
+use serde ::{ Serialize, Deserialize };
+ 
+#[derive(Serialize,Deserialize,Debug)]
+struct User2{
+    name:String,
+    age:u32
+
+}
+let u=User2{
+    name:"vinay".into(),
+    age:21
+};
+let json_string:String= serde_json::to_string(&u).unwrap();
+println!("{}",json_string);
+// match json_string{
+//     Ok(value)=>{
+//         println!("{}",value);
+
+//     }
+//     Err(err)=>{
+//         println!("{}",err);
+//     }
+// };
+let unwrapped: User2= serde_json::from_str(&json_string).unwrap()  ;
+println!("{:?}",unwrapped);
+
+
+
+use borsh::{BorshSerialize,BorshDeserialize};
+
+
+#[derive(  BorshSerialize, BorshDeserialize, Debug)]
+struct User3 {
+    name: String,
+    age: u32,
+ 
+}
+let user3 = User3 {
+    name: "Vinayjj".to_string(),
+    age: 33,
+
+};
+let mut buff:Vec<u8>=Vec::new();
+let _serialized =user3.serialize(&mut buff).unwrap(); // returns the result of empty 
+println!("{:?}", buff);
+// let deserialized= User3::try_from_slice(&mut &buff[..]).unwrap();
+// println!("{:?}", deserialized);
+
+let deserialzed=User3::try_from_slice(& mut buff).unwrap();
+println!("{:?}", deserialzed);
+
 }
 
